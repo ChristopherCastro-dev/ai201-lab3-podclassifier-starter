@@ -44,8 +44,8 @@ Returns the fraction of predictions that exactly match the ground truth.
 **Formula:**
 
 ```
-[blank — write out the accuracy formula in plain English.
- What counts as "correct"? What do you divide by?]
+accuracy = number of correct predictions / total number of predictions.
+A prediction is correct when it exactly matches the ground truth label.
 ```
 
 ---
@@ -53,10 +53,11 @@ Returns the fraction of predictions that exactly match the ground truth.
 **Step-by-step logic:**
 
 ```
-[blank — describe the steps your code will take.
- 1. ...
- 2. ...
- 3. ...]
+1. If the list is empty, return 0.0
+2. Loop through predictions and ground_truth together
+3. Count how many times prediction == ground_truth
+4. Divide that count by total number of predictions
+5. Return the result
 ```
 
 ---
@@ -64,7 +65,7 @@ Returns the fraction of predictions that exactly match the ground truth.
 **Edge case — what if both lists are empty?**
 
 ```
-[blank — what should the function return? Why?]
+Return 0.0 — no predictions to evaluate, 0.0 is a safe default.
 ```
 
 ---
@@ -75,7 +76,11 @@ Returns the fraction of predictions that exactly match the ground truth.
 predictions  = ["interview", "solo", "panel", "interview"]
 ground_truth = ["interview", "solo", "solo",  "narrative"]
 
-[blank — what does compute_accuracy() return for these inputs? Show your work.]
+position 0: interview == interview ✅
+position 1: solo == solo ✅
+position 2: panel != solo ❌
+position 3: interview != narrative ❌
+correct = 2, total = 4, accuracy = 0.5
 ```
 
 ---
@@ -113,8 +118,7 @@ A `dict` keyed by label. Each value is a dict with three keys:
 **What does "correct" mean for a given class?**
 
 ```
-[blank — be precise. When does an episode count as correctly classified
- for the "interview" class, for example?]
+ground_truth == that class AND prediction == that class. Both must match.
 ```
 
 ---
@@ -122,7 +126,7 @@ A `dict` keyed by label. Each value is a dict with three keys:
 **What does "total" mean for a given class?**
 
 ```
-[blank — is "total" the total number of predictions, or something more specific?]
+Total number of episodes whose ground_truth is that class, not all predictions.
 ```
 
 ---
@@ -130,12 +134,11 @@ A `dict` keyed by label. Each value is a dict with three keys:
 **Step-by-step logic:**
 
 ```
-[blank — describe the steps your code will take.
- 1. Initialize ...
- 2. Loop over ...
- 3. For each pair (predicted, truth) ...
- 4. After the loop ...
- 5. Return ...]
+1. Initialize dict for each label with correct=0, total=0, accuracy=0.0
+2. Loop over predictions and ground_truth together
+3. If truth matches a label, increment total. If prediction == truth, increment correct.
+4. After loop, divide correct by total for each label to get accuracy
+5. Return the dict
 ```
 
 ---
@@ -143,8 +146,7 @@ A `dict` keyed by label. Each value is a dict with three keys:
 **Edge case — what if a class has no examples in ground_truth (total == 0)?**
 
 ```
-[blank — what should accuracy be set to? Why?
- Hint: look at the docstring in evaluate.py.]
+Set accuracy to 0.0 — cannot divide by zero.
 ```
 
 ---
@@ -159,10 +161,10 @@ ground_truth = ["interview", "solo",      "solo", "panel", "narrative"]
 
 label       correct  total  accuracy
 ----------  -------  -----  --------
-interview   [blank]  [blank]  [blank]
-solo        [blank]  [blank]  [blank]
-panel       [blank]  [blank]  [blank]
-narrative   [blank]  [blank]  [blank]
+interview      1        1      1.0
+solo           1        2      0.5
+panel          1        1      1.0
+narrative      0        1      0.0   
 ```
 
 ---

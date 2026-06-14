@@ -1,4 +1,4 @@
-# Classifier Spec — Pod Classifier
+# Classifier Spec - Pod Classifier
 
 Complete this spec **before** writing any code for Milestone 2.
 
@@ -91,10 +91,13 @@ the format below:" followed by the output format you chose.
 **What output format should you request from the LLM?**
 
 ```
-[blank — you need to parse the response in classify_episode(). What format
-makes parsing reliable? Think about: a single label on its own line?
-A structured format like "Label: X / Reasoning: Y"? JSON?
-What are the tradeoffs?]
+Label: <one of: interview, solo, panel, narrative>
+Reasoning: <one to two sentences explaining why>
+
+We chose Label: X / Reasoning: Y format because it is easy to parse by
+looping through lines and splitting on the colon. More reliable than a
+single label alone because the model is less likely to add extra text
+before the label when it has a Reasoning line to write to.
 ```
 
 ---
@@ -102,8 +105,9 @@ What are the tradeoffs?]
 **Edge cases to handle in the prompt:**
 
 ```
-[blank — what if labeled_examples is empty? What if the description is very
-short? How does your prompt handle these?]
+If labeled_examples is empty the prompt still runs but performance will be
+poor since there is no training signal. Short descriptions are handled the
+same way as long ones — no special handling needed.
 ```
 
 ---
@@ -159,9 +163,9 @@ Extract the response text from:
 **Step 3 — Parse the response:**
 
 ```
-[blank — how do you extract the label and reasoning from the LLM's text output?
-What string operations or parsing logic do you need?
-This depends on the output format you chose in build_few_shot_prompt.]
+Loop through each line of the response text. Find the line starting with
+"label:" (case-insensitive), split on ":", take index [1], strip whitespace,
+convert to lowercase. Do the same for "reasoning:".
 ```
 
 ---
@@ -169,8 +173,7 @@ This depends on the output format you chose in build_few_shot_prompt.]
 **Step 4 — Validate the label:**
 
 ```
-[blank — what do you do if the LLM returns a label that isn't in VALID_LABELS?
-What should label be set to?]
+If the extracted label is not in VALID_LABELS, set label = "unknown".
 ```
 
 ---
@@ -178,9 +181,9 @@ What should label be set to?]
 **Step 5 — Handle errors gracefully:**
 
 ```
-[blank — what could go wrong? (Network error? Unparseable response?)
-What should the function return if something fails?
-Hint: the evaluation loop runs 20 calls — one bad response shouldn't crash everything.]
+Wrap everything in try/except. If anything fails return:
+{"label": "unknown", "reasoning": "Error: <message>"}
+This ensures one bad response does not crash the evaluation loop.
 ```
 
 ---
